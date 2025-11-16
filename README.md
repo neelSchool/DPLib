@@ -7,11 +7,11 @@ Libtorch version is CPU onlh not CUDA or Rocm but code can be ran quicker throug
 
 download the data files from https://yann.lecun.org/exdb/mnist/index.html
 For Algorithm1 tests using CMake file:
-'
+```
 mkdir build && cd build
 cmake ..
 make train -j4
-'
+```
 
 For algorithm2 test as provided in any Code Editor or IDE.
 For (Proving+Verifiying) GKR, Sumcheck and IVC reference this codebase https://github.com/zkPoTs/kaizen/tree/main
