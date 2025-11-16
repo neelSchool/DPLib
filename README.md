@@ -15,3 +15,5 @@ make train -j4
 
 For algorithm2 test as provided in any Code Editor or IDE.
 For (Proving+Verifiying) GKR, Sumcheck and IVC reference this codebase https://github.com/zkPoTs/kaizen/tree/main
+
+If you have any questions or need help understanding or improving upon any elements of the code, feel free to contact neel.mehendale@gmail.com
