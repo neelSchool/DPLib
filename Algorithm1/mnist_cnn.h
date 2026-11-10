@@ -1,9 +1,6 @@
 #pragma once
 #include <torch/torch.h>
 
-// ===============================
-// Simple CNN for MNIST (28x28x1)
-// ===============================
 struct MNISTCNNImpl : torch::nn::Module {
     torch::nn::Conv2d conv1{nullptr};
     torch::nn::Conv2d conv2{nullptr};
