@@ -4,9 +4,6 @@
 #include <cmath>
 #include <random>
 
-// ================================================================
-//  BOX–MULLER GAUSSIAN NOISE
-// ================================================================
 inline double box_muller(double mean, double stddev) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
@@ -31,10 +28,6 @@ inline torch::Tensor gaussian_noise_like(const torch::Tensor& ref, double stddev
 }
 
 
-// ================================================================
-//  PER-SAMPLE GRADIENTS (single sample)
-//  This uses: model->zero_grad() and model->forward()
-// ================================================================
 template <typename Model>
 inline std::vector<torch::Tensor> compute_per_sample_gradients(
         Model& model,
@@ -57,10 +50,6 @@ inline std::vector<torch::Tensor> compute_per_sample_gradients(
     return grads;
 }
 
-
-// ================================================================
-//  DP-SGD UPDATE STEP (Algorithm 1)
-// ================================================================
 template <typename Model>
 inline void dp_sgd_step(
     Model& model,
@@ -76,10 +65,6 @@ inline void dp_sgd_step(
     std::vector<std::vector<torch::Tensor>> per_sample_grads;
     per_sample_grads.reserve(batch_size);
 
-
-    // =================================================================
-    // 1. PER-SAMPLE GRADIENTS
-    // =================================================================
     for (int i = 0; i < batch_size; i++) {
         auto x_i = batch_x[i].unsqueeze(0);   // [1, 1, 28, 28]
         auto y_i = batch_y[i].unsqueeze(0);
@@ -88,10 +73,6 @@ inline void dp_sgd_step(
         per_sample_grads.push_back(grads);
     }
 
-
-    // =================================================================
-    // 2. CLIP GRADIENTS
-    // =================================================================
     for (int i = 0; i < batch_size; i++) {
         double norm_sq = 0.0;
 
@@ -107,10 +88,6 @@ inline void dp_sgd_step(
             g.mul_(clip_factor);
     }
 
-
-    // =================================================================
-    // 3. AVERAGE CLIPPED GRADIENT
-    // =================================================================
     std::vector<torch::Tensor> avg_grads;
     avg_grads.reserve(model->parameters().size());
 
@@ -130,10 +107,6 @@ inline void dp_sgd_step(
     for (auto& g : avg_grads)
         g /= batch_size;
 
-
-    // =================================================================
-    // 4. ADD GAUSSIAN NOISE
-    // =================================================================
     double noise_std = sigma * C;
 
     for (size_t k = 0; k < avg_grads.size(); k++) {
@@ -141,10 +114,6 @@ inline void dp_sgd_step(
         avg_grads[k] += noise;
     }
 
-
-    // =================================================================
-    // 5. WEIGHT UPDATE
-    // =================================================================
     size_t k = 0;
     for (auto& p : model->parameters()) {
         p.data().sub_(eta * avg_grads[k]);
